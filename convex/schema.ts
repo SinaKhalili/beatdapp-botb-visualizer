@@ -16,5 +16,13 @@ export default defineSchema({
     storageId: v.optional(v.id('_storage')),
     // Stable random number used for deterministic placement/coloring in 3D.
     seed: v.number(),
+    // Alien-transform lifecycle (uploads only): transforming → ready | failed.
+    status: v.optional(
+      v.union(
+        v.literal('transforming'),
+        v.literal('ready'),
+        v.literal('failed'),
+      ),
+    ),
   }),
 })

@@ -30,6 +30,26 @@ export const listPhotos = query({
   },
 })
 
+// Single photo by id, with its resolved image URL + transform status. The
+// upload page subscribes to this to drive the transmission effect and reveal.
+export const getPhoto = query({
+  args: { photoId: v.id('photos') },
+  handler: async (ctx, args) => {
+    const p = await ctx.db.get('photos', args.photoId)
+    if (!p) return null
+    const imageUrl = p.storageId
+      ? await ctx.storage.getUrl(p.storageId)
+      : p.imageUrl
+    return {
+      id: p._id,
+      name: p.name,
+      company: p.company,
+      imageUrl,
+      status: p.status ?? 'ready',
+    }
+  },
+})
+
 // Step 1 of an upload: hand the client a short-lived URL to POST the file to.
 export const generateUploadUrl = mutation({
   args: {},
@@ -52,6 +72,7 @@ export const addUploadedPhoto = mutation({
       company: args.company,
       storageId: args.storageId,
       seed,
+      status: 'transforming',
     })
     // Transform into a psychedelic alien in the background; the planet shows the
     // original immediately and swaps to the alien version when it's ready.
