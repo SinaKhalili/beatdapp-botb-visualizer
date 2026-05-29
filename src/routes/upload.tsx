@@ -11,6 +11,8 @@ export const Route = createFileRoute('/upload')({
 type Phase = 'idle' | 'transmitting' | 'done'
 
 const TARGET_SECONDS = 45
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024 // 10 MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 function fmt(sec: number) {
   const s = Math.max(0, Math.ceil(sec))
@@ -59,6 +61,19 @@ function UploadPage() {
 
   function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null
+    if (f && !ALLOWED_TYPES.includes(f.type)) {
+      setError('Please choose a JPG, PNG, or WebP image.')
+      setFile(null)
+      setPreview(null)
+      return
+    }
+    if (f && f.size > MAX_UPLOAD_BYTES) {
+      setError('That image is over 10 MB — please pick a smaller one.')
+      setFile(null)
+      setPreview(null)
+      return
+    }
+    setError(null)
     setFile(f)
     setPreview(f ? URL.createObjectURL(f) : null)
   }
@@ -207,14 +222,18 @@ function UploadPage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={onPickFile}
               hidden
             />
             {preview ? (
               <img src={preview} alt="preview" className="upload-preview" />
             ) : (
-              <span className="upload-drop-hint">Tap to choose a photo</span>
+              <span className="upload-drop-hint">
+                Tap to choose a photo
+                <br />
+                <small>JPG, PNG or WebP · max 10 MB</small>
+              </span>
             )}
           </label>
 

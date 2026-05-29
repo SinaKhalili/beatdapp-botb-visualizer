@@ -58,6 +58,9 @@ export const generateUploadUrl = mutation({
   },
 })
 
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024 // 10 MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
 // Step 2 of an upload: create the planet from the stored file + label.
 export const addUploadedPhoto = mutation({
   args: {
@@ -66,6 +69,18 @@ export const addUploadedPhoto = mutation({
     storageId: v.id('_storage'),
   },
   handler: async (ctx, args) => {
+    // Enforce limits on the already-uploaded file; delete it if it's no good.
+    const meta = await ctx.db.system.get('_storage', args.storageId)
+    if (!meta) throw new Error('Upload not found — please try again.')
+    if (!meta.contentType || !ALLOWED_TYPES.includes(meta.contentType)) {
+      await ctx.storage.delete(args.storageId)
+      throw new Error('Please upload a JPG, PNG, or WebP image.')
+    }
+    if (meta.size > MAX_UPLOAD_BYTES) {
+      await ctx.storage.delete(args.storageId)
+      throw new Error('Image must be under 10 MB.')
+    }
+
     const seed = Math.floor(Math.random() * 1_000_000)
     const photoId = await ctx.db.insert('photos', {
       name: args.name,
