@@ -41,17 +41,18 @@ function Scene({
       {viz.ribbons && <WaveformRibbons count={viz.ribbonCount} />}
       {viz.shockwaves && <Shockwaves strength={viz.pulseStrength} />}
 
-      <Suspense fallback={null}>
-        {photos.map((photo, i) => (
+      {photos.map((photo, i) => (
+        // Per-planet Suspense so one texture (re)loading — e.g. the live alien
+        // swap — never blanks the rest of the galaxy.
+        <Suspense key={photo.id} fallback={null}>
           <PhotoPlanet
-            key={photo.id}
             photo={photo}
             index={i}
             beatPulse={viz.beatPulse}
             pulseStrength={viz.pulseStrength}
           />
-        ))}
-      </Suspense>
+        </Suspense>
+      ))}
 
       <AutoPilotCamera photos={photos} />
 

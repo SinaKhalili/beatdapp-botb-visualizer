@@ -1,5 +1,6 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
+import { internal } from './_generated/api'
 
 // Returns every photo in creation order. The client subscribes to this, so
 // inserting a row makes a new planet animate into the universe automatically.
@@ -46,12 +47,19 @@ export const addUploadedPhoto = mutation({
   },
   handler: async (ctx, args) => {
     const seed = Math.floor(Math.random() * 1_000_000)
-    return await ctx.db.insert('photos', {
+    const photoId = await ctx.db.insert('photos', {
       name: args.name,
       company: args.company,
       storageId: args.storageId,
       seed,
     })
+    // Transform into a psychedelic alien in the background; the planet shows the
+    // original immediately and swaps to the alien version when it's ready.
+    await ctx.scheduler.runAfter(0, internal.aliens.transform, {
+      photoId,
+      storageId: args.storageId,
+    })
+    return photoId
   },
 })
 
