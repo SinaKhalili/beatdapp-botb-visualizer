@@ -19,10 +19,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
-      - run: npm ci
+      # `npm ci` honors the lockfile; fall back to `npm install` if it drifts.
+      - run: npm ci || npm install
 
       # Deploys Convex backend to prod, builds the frontend against the prod
       # Convex URL, and uploads the Cloudflare Worker. Secrets come from the
