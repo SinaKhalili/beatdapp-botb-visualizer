@@ -1,0 +1,34 @@
+node_modules
+
+# --- secrets & local env (NEVER commit — repo is public) ---
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+.wrangler/
+# -----------------------------------------------------------
+
+.env.local
+.DS_Store
+.cache
+.vercel
+.output
+.nitro
+.tanstack
+
+/build/
+/api/
+/server/build
+/public/build
+/dist/
+/dist-ssr/
+
+# Sentry Config File
+.env.sentry-build-plugin
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+app.config.timestamp_*.js

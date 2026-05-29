@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Chakra+Petch:wght@400;600;700&display=swap');
+@import 'tailwindcss';
+
+@layer base {
+  html,
+  body {
+    @apply text-gray-900 bg-gray-50 dark:bg-gray-950 dark:text-gray-200;
+  }
+
+  .using-mouse * {
+    outline: none !important;
+  }
+}
+
+/* ── BOTB Universe screen ─────────────────────────────────────────── */
+.universe-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #160a36 0%, #05010f 70%);
+}
+
+/* Presentation mode: clean venue screen — no cursor, no UI chrome. */
+.universe-root.presentation {
+  cursor: none;
+}
+
+.universe-overlay {
+  position: absolute;
+  left: clamp(1.5rem, 4vw, 4rem);
+  bottom: clamp(1.5rem, 4vw, 3rem);
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+}
+
+.universe-title {
+  font-family: 'Monoton', cursive;
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  word-spacing: 0.3em;
+  color: #fde7ff;
+  text-shadow:
+    0 0 8px #ff5edb,
+    0 0 24px #b14bff,
+    0 0 56px #6a3cff;
+  animation: universe-flicker 7s infinite;
+}
+
+.universe-sub {
+  margin-top: 0.6rem;
+  font-family: 'Chakra Petch', monospace;
+  font-weight: 600;
+  font-size: clamp(0.8rem, 1.4vw, 1.15rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #8be9ff;
+  text-shadow: 0 0 10px rgba(80, 200, 255, 0.6);
+}
+
+/* Bottom-right control buttons. */
+.universe-buttons {
+  position: absolute;
+  right: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  display: flex;
+  gap: 0.6rem;
+  z-index: 3;
+}
+
+.universe-btn {
+  font-family: 'Chakra Petch', monospace;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d8c8ff;
+  background: rgba(30, 12, 60, 0.55);
+  border: 1px solid rgba(177, 75, 255, 0.55);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 14px rgba(123, 60, 255, 0.25);
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.universe-btn:hover {
+  color: #ffffff;
+  background: rgba(60, 24, 110, 0.7);
+  box-shadow: 0 0 22px rgba(177, 75, 255, 0.55);
+}
+
+@keyframes universe-flicker {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.55;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.7;
+  }
+  97% {
+    opacity: 1;
+  }
+}
+
+/* ── Universe loading screen ──────────────────────────────────────── */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  background: radial-gradient(ellipse at 50% 45%, #1a0a44 0%, #05010f 75%);
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.loading-overlay--done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-title {
+  font-family: 'Monoton', cursive;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  word-spacing: 0.3em;
+  color: #fde7ff;
+  text-shadow:
+    0 0 10px #ff5edb,
+    0 0 30px #b14bff,
+    0 0 70px #6a3cff;
+  animation: universe-flicker 7s infinite;
+}
+
+.loading-bar {
+  width: min(420px, 70vw);
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(123, 60, 255, 0.18);
+  border: 1px solid rgba(177, 75, 255, 0.4);
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4be3ff, #b14bff, #ff5edb);
+  box-shadow: 0 0 16px rgba(255, 94, 219, 0.7);
+  transition: width 0.35s ease;
+}
+
+.loading-text {
+  font-family: 'Chakra Petch', monospace;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #8be9ff;
+  text-shadow: 0 0 10px rgba(80, 200, 255, 0.5);
+}
+
+/* ── Landing page ─────────────────────────────────────────────────── */
+.landing-root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 30%,
+      #2a1057 0%,
+      #120637 38%,
+      #05010f 78%
+    );
+}
+
+.landing-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+}
+
+.landing-title {
+  font-family: 'Monoton', cursive;
+  font-size: clamp(2.6rem, 9vw, 6.5rem);
+  line-height: 0.95;
+  word-spacing: 0.3em;
+  color: #fde7ff;
+  text-shadow:
+    0 0 10px #ff5edb,
+    0 0 30px #b14bff,
+    0 0 70px #6a3cff;
+  animation: universe-flicker 7s infinite;
+}
+
+.landing-sub {
+  margin-top: 1rem;
+  font-family: 'Chakra Petch', monospace;
+  font-weight: 600;
+  font-size: clamp(0.85rem, 1.6vw, 1.2rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #8be9ff;
+  text-shadow: 0 0 12px rgba(80, 200, 255, 0.6);
+}
+
+.landing-actions {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.landing-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 13rem;
+  padding: 1.4rem 2.2rem;
+  border-radius: 1rem;
+  font-family: 'Chakra Petch', monospace;
+  text-decoration: none;
+  cursor: pointer;
+  background: rgba(30, 12, 60, 0.5);
+  border: 1px solid rgba(177, 75, 255, 0.5);
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.landing-btn-label {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.landing-btn-note {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.landing-btn--primary {
+  color: #fce7ff;
+  border-color: rgba(255, 94, 219, 0.7);
+  box-shadow: 0 0 22px rgba(177, 75, 255, 0.35);
+}
+
+.landing-btn--primary:hover {
+  transform: translateY(-3px);
+  background: rgba(70, 26, 120, 0.7);
+  border-color: #ff5edb;
+  box-shadow: 0 0 36px rgba(255, 94, 219, 0.6);
+}
+
+.landing-btn--primary .landing-btn-note {
+  color: #8be9ff;
+}
+
+.landing-btn--disabled {
+  color: #9a8fb8;
+  border-color: rgba(120, 100, 160, 0.35);
+  border-style: dashed;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.landing-btn--disabled .landing-btn-note {
+  color: #c98bff;
+}
+
+.landing-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Subtle film grain over the whole scene for analog warmth. */
+.universe-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
