@@ -7,14 +7,51 @@ export const listPhotos = query({
   args: {},
   handler: async (ctx) => {
     const photos = await ctx.db.query('photos').order('asc').collect()
-    return photos.map((p) => ({
-      id: p._id,
-      name: p.name,
-      company: p.company,
-      imageUrl: p.imageUrl,
-      seed: p.seed,
-      createdAt: p._creationTime,
-    }))
+    const resolved = await Promise.all(
+      photos.map(async (p) => {
+        // Uploaded photos resolve their URL from storage; seeded ones have one.
+        const imageUrl = p.storageId
+          ? await ctx.storage.getUrl(p.storageId)
+          : p.imageUrl
+        if (!imageUrl) return null
+        return {
+          id: p._id,
+          name: p.name,
+          company: p.company,
+          imageUrl,
+          seed: p.seed,
+          createdAt: p._creationTime,
+        }
+      }),
+    )
+    // Drop any whose file went missing.
+    return resolved.filter((p): p is NonNullable<typeof p> => p !== null)
+  },
+})
+
+// Step 1 of an upload: hand the client a short-lived URL to POST the file to.
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl()
+  },
+})
+
+// Step 2 of an upload: create the planet from the stored file + label.
+export const addUploadedPhoto = mutation({
+  args: {
+    name: v.string(),
+    company: v.string(),
+    storageId: v.id('_storage'),
+  },
+  handler: async (ctx, args) => {
+    const seed = Math.floor(Math.random() * 1_000_000)
+    return await ctx.db.insert('photos', {
+      name: args.name,
+      company: args.company,
+      storageId: args.storageId,
+      seed,
+    })
   },
 })
 

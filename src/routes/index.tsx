@@ -17,10 +17,10 @@ function Home() {
             <span className="landing-btn-note">Enter the galaxy</span>
           </Link>
 
-          <button type="button" className="landing-btn landing-btn--disabled" disabled>
+          <Link to="/upload" className="landing-btn landing-btn--primary">
             <span className="landing-btn-label">Upload</span>
-            <span className="landing-btn-note">(not done yet)</span>
-          </button>
+            <span className="landing-btn-note">Add a world</span>
+          </Link>
         </div>
       </main>
     </div>

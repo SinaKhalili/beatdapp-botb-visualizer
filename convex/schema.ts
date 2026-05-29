@@ -11,7 +11,9 @@ export default defineSchema({
   photos: defineTable({
     name: v.string(),
     company: v.string(),
-    imageUrl: v.string(),
+    // Seeded placeholders use a direct URL; uploads use Convex file storage.
+    imageUrl: v.optional(v.string()),
+    storageId: v.optional(v.id('_storage')),
     // Stable random number used for deterministic placement/coloring in 3D.
     seed: v.number(),
   }),
