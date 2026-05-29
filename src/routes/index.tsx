@@ -10,7 +10,6 @@ function Home() {
       <div className="landing-grain" />
       <main className="landing-content">
         <h1 className="landing-title">BOTB Universe</h1>
-        <p className="landing-sub">A live galaxy of the room</p>
 
         <div className="landing-actions">
           <Link to="/universe" className="landing-btn landing-btn--primary">

@@ -171,12 +171,6 @@ export function Universe() {
 
       <div className="universe-overlay">
         <div className="universe-title">BOTB Universe</div>
-        {!presentation && (
-          <div className="universe-sub">
-            {photos.length} {photos.length === 1 ? 'world' : 'worlds'} mapped
-            tonight · press H for controls
-          </div>
-        )}
       </div>
 
       {!presentation && (
