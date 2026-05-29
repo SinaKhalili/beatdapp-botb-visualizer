@@ -12,8 +12,8 @@ declare const process: { env: Record<string, string | undefined> }
 // transforms a moment later. The photo's `status` drives the upload page's
 // transmission effect: transforming → ready | failed.
 //
-// Cost kept low: gpt-image-1-mini (the cost-efficient model), quality "low",
-// smallest size.
+// Model: gpt-image-2 at quality "medium" (good quality/cost balance; bump to
+// "high" for max fidelity at ~4x the cost).
 
 const PROMPT =
   'Give the subject of this photo a SLIGHT psychedelic alien makeover while ' +
@@ -47,11 +47,11 @@ export const transform = internalAction({
           : 'png'
 
     const form = new FormData()
-    form.append('model', 'gpt-image-1-mini')
+    form.append('model', 'gpt-image-2') // latest model
     form.append('image', blob, `input.${ext}`)
     form.append('prompt', PROMPT)
     form.append('size', '1024x1024')
-    form.append('quality', 'low') // cheapest
+    form.append('quality', 'medium') // step up from low; bump to 'high' for max
     form.append('n', '1')
 
     let res: Response
