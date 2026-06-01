@@ -67,6 +67,8 @@ export const addUploadedPhoto = mutation({
     name: v.string(),
     company: v.string(),
     storageId: v.id('_storage'),
+    // Admin can add a photo without the alien transform.
+    transform: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     // Enforce limits on the already-uploaded file; delete it if it's no good.
@@ -81,20 +83,23 @@ export const addUploadedPhoto = mutation({
       throw new Error('Image must be under 10 MB.')
     }
 
+    const doTransform = args.transform ?? true
     const seed = Math.floor(Math.random() * 1_000_000)
     const photoId = await ctx.db.insert('photos', {
       name: args.name,
       company: args.company,
       storageId: args.storageId,
       seed,
-      status: 'transforming',
+      status: doTransform ? 'transforming' : 'ready',
     })
-    // Transform into a psychedelic alien in the background; the planet shows the
-    // original immediately and swaps to the alien version when it's ready.
-    await ctx.scheduler.runAfter(0, internal.aliens.transform, {
-      photoId,
-      storageId: args.storageId,
-    })
+    if (doTransform) {
+      // Transform into a psychedelic alien in the background; the planet shows
+      // the original immediately and swaps to the alien when it's ready.
+      await ctx.scheduler.runAfter(0, internal.aliens.transform, {
+        photoId,
+        storageId: args.storageId,
+      })
+    }
     return photoId
   },
 })

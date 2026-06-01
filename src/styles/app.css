@@ -138,6 +138,228 @@
   width: min(360px, 52vw);
 }
 
+/* ── Admin panel ──────────────────────────────────────────────────── */
+.admin-gate {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 50% 35%, #1e0b4a 0%, #07021a 75%);
+  font-family: 'Chakra Petch', monospace;
+}
+.admin-gate-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(360px, 90vw);
+  padding: 2rem;
+  border-radius: 1rem;
+  background: rgba(20, 8, 44, 0.7);
+  border: 1px solid rgba(177, 75, 255, 0.4);
+  text-align: center;
+}
+.admin-gate-title {
+  font-family: 'Monoton', cursive;
+  font-size: 1.8rem;
+  color: #fde7ff;
+  text-shadow: 0 0 14px rgba(177, 75, 255, 0.7);
+}
+
+.admin-root {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0d0426 0%, #07021a 100%);
+  color: #e9e0ff;
+  font-family: 'Chakra Petch', monospace;
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(177, 75, 255, 0.25);
+  padding-bottom: 1rem;
+}
+.admin-h1 {
+  font-family: 'Monoton', cursive;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  color: #fde7ff;
+  text-shadow: 0 0 14px rgba(177, 75, 255, 0.6);
+}
+.admin-sub {
+  color: #8be9ff;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+.admin-header-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+.admin-h2 {
+  font-size: 1rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c9b8ff;
+  margin-bottom: 0.7rem;
+}
+
+.admin-add {
+  background: rgba(30, 12, 60, 0.45);
+  border: 1px solid rgba(177, 75, 255, 0.3);
+  border-radius: 0.8rem;
+  padding: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+.admin-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.admin-input {
+  font-family: 'Chakra Petch', monospace;
+  font-size: 0.92rem;
+  color: #f1e8ff;
+  background: rgba(12, 5, 30, 0.8);
+  border: 1px solid rgba(177, 75, 255, 0.35);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  outline: none;
+  min-width: 140px;
+  flex: 1;
+}
+.admin-input--name {
+  flex: 0 1 180px;
+}
+.admin-input::placeholder {
+  color: #8a7bb0;
+}
+.admin-input:focus {
+  border-color: #4be3ff;
+}
+.admin-file {
+  font-size: 0.8rem;
+  color: #b9a8e0;
+  max-width: 220px;
+}
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: #c9b8ff;
+  white-space: nowrap;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.admin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  background: rgba(20, 8, 44, 0.5);
+  border: 1px solid rgba(123, 60, 255, 0.2);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem;
+}
+.admin-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  background: #120630;
+  flex-shrink: 0;
+}
+.admin-thumb--empty {
+  border: 1px dashed rgba(177, 75, 255, 0.4);
+}
+.admin-status {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.admin-status--ready {
+  background: rgba(75, 227, 140, 0.18);
+  color: #6bf0a8;
+}
+.admin-status--transforming {
+  background: rgba(255, 200, 75, 0.18);
+  color: #ffd36b;
+}
+.admin-status--failed {
+  background: rgba(255, 90, 120, 0.18);
+  color: #ff8aa8;
+}
+.admin-row-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.admin-btn {
+  font-family: 'Chakra Petch', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #d8c8ff;
+  background: rgba(60, 24, 110, 0.5);
+  border: 1px solid rgba(177, 75, 255, 0.4);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.admin-btn:hover {
+  background: rgba(90, 36, 150, 0.7);
+}
+.admin-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.admin-btn--primary {
+  color: #fff;
+  border-color: #ff5edb;
+  background: rgba(120, 30, 110, 0.6);
+}
+.admin-btn--danger {
+  color: #ff9bb0;
+  border-color: rgba(255, 90, 120, 0.5);
+  background: rgba(80, 16, 36, 0.5);
+}
+.admin-btn--danger:hover {
+  background: rgba(120, 24, 50, 0.7);
+}
+.admin-error {
+  color: #ff8aa8;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.admin-empty {
+  color: #8a7bb0;
+  padding: 1rem;
+}
+.admin-back {
+  color: #8be9ff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+}
+
 /* ── Universe loading screen ──────────────────────────────────────── */
 .loading-overlay {
   position: absolute;

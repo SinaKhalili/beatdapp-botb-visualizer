@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as UniverseRouteImport } from './routes/universe'
 import { Route as AnotherPageRouteImport } from './routes/anotherPage'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UploadRoute = UploadRouteImport.update({
@@ -29,6 +30,11 @@ const AnotherPageRoute = AnotherPageRouteImport.update({
   path: '/anotherPage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/anotherPage' | '/universe' | '/upload'
+  fullPaths: '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/anotherPage' | '/universe' | '/upload'
-  id: '__root__' | '/' | '/anotherPage' | '/universe' | '/upload'
+  to: '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
+  id: '__root__' | '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AnotherPageRoute: typeof AnotherPageRoute
   UniverseRoute: typeof UniverseRoute
   UploadRoute: typeof UploadRoute
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnotherPageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AnotherPageRoute: AnotherPageRoute,
   UniverseRoute: UniverseRoute,
   UploadRoute: UploadRoute,
