@@ -12,7 +12,8 @@ export function BrandSpiral() {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.025
+      // Slow hypnotic swirl — ~one full turn per minute (visible, not dizzying).
+      groupRef.current.rotation.y = state.clock.elapsedTime * 0.11
     }
   })
 
