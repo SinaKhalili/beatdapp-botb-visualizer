@@ -42,11 +42,23 @@ function PhotoBillboard({
   const texture = useTexture(photo.imageUrl)
   texture.colorSpace = THREE.SRGBColorSpace
 
+  // Size the billboard to the photo's real aspect ratio so it isn't stretched.
+  const img = texture.image as
+    | { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number }
+    | undefined
+  const iw = img?.naturalWidth || img?.width || 1
+  const ih = img?.naturalHeight || img?.height || 1
+  const aspect = iw / ih
+  const base = 2.1 // longest side fits this footprint
+  const photoW = aspect >= 1 ? base : base * aspect
+  const photoH = aspect >= 1 ? base / aspect : base
+  const labelY = -(photoH / 2) - 0.5
+
   return (
     <Billboard>
       {/* Glowing frame (bloom picks this up) */}
       <mesh position={[0, 0, -0.02]}>
-        <planeGeometry args={[2.34, 2.34]} />
+        <planeGeometry args={[photoW + 0.24, photoH + 0.24]} />
         <meshBasicMaterial
           color={hue}
           toneMapped={false}
@@ -56,11 +68,11 @@ function PhotoBillboard({
       </mesh>
       {/* Photo */}
       <mesh>
-        <planeGeometry args={[2.1, 2.1]} />
+        <planeGeometry args={[photoW, photoH]} />
         <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
       {/* Label */}
-      <group position={[0, -1.55, 0]}>
+      <group position={[0, labelY, 0]}>
         <Text
           fontSize={0.34}
           color="#ffffff"
