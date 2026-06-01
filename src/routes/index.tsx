@@ -21,9 +21,14 @@ function Home() {
             <span className="landing-btn-note">Enter the galaxy</span>
           </Link>
 
+          <Link to="/alienify" className="landing-btn landing-btn--primary">
+            <span className="landing-btn-label">Alienify</span>
+            <span className="landing-btn-note">Become an alien 👽</span>
+          </Link>
+
           <Link to="/upload" className="landing-btn landing-btn--primary">
             <span className="landing-btn-label">Upload</span>
-            <span className="landing-btn-note">Add a world</span>
+            <span className="landing-btn-note">Add your photo</span>
           </Link>
         </div>
       </main>

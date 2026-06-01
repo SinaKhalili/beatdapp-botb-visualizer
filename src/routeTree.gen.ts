@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as UniverseRouteImport } from './routes/universe'
 import { Route as AnotherPageRouteImport } from './routes/anotherPage'
+import { Route as AlienifyRouteImport } from './routes/alienify'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const AnotherPageRoute = AnotherPageRouteImport.update({
   path: '/anotherPage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlienifyRoute = AlienifyRouteImport.update({
+  id: '/alienify',
+  path: '/alienify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/alienify': typeof AlienifyRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/alienify': typeof AlienifyRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
@@ -59,21 +67,36 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/alienify': typeof AlienifyRoute
   '/anotherPage': typeof AnotherPageRoute
   '/universe': typeof UniverseRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/alienify'
+    | '/anotherPage'
+    | '/universe'
+    | '/upload'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
-  id: '__root__' | '/' | '/admin' | '/anotherPage' | '/universe' | '/upload'
+  to: '/' | '/admin' | '/alienify' | '/anotherPage' | '/universe' | '/upload'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/alienify'
+    | '/anotherPage'
+    | '/universe'
+    | '/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AlienifyRoute: typeof AlienifyRoute
   AnotherPageRoute: typeof AnotherPageRoute
   UniverseRoute: typeof UniverseRoute
   UploadRoute: typeof UploadRoute
@@ -102,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnotherPageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alienify': {
+      id: '/alienify'
+      path: '/alienify'
+      fullPath: '/alienify'
+      preLoaderRoute: typeof AlienifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -122,6 +152,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AlienifyRoute: AlienifyRoute,
   AnotherPageRoute: AnotherPageRoute,
   UniverseRoute: UniverseRoute,
   UploadRoute: UploadRoute,

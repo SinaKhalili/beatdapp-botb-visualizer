@@ -560,6 +560,17 @@
   margin-bottom: 1.8rem;
 }
 
+.upload-subtitle {
+  margin: -1rem 0 1.6rem;
+  font-family: 'Chakra Petch', monospace;
+  font-weight: 600;
+  font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8be9ff;
+  text-shadow: 0 0 10px rgba(80, 200, 255, 0.5);
+}
+
 .upload-form {
   display: flex;
   flex-direction: column;
