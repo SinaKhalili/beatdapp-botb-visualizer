@@ -267,16 +267,6 @@ export function PhotoUploader({ alienify }: { alienify: boolean }) {
                   : 'Add to Galaxy'}
             </span>
           </button>
-
-          <Link
-            to={alienify ? '/upload' : '/alienify'}
-            className="upload-back"
-          >
-            {alienify ? 'Just upload (no alien) →' : 'Alienify me 👽 →'}
-          </Link>
-          <Link to="/" className="upload-back">
-            ← Home
-          </Link>
         </form>
       </main>
     </div>
