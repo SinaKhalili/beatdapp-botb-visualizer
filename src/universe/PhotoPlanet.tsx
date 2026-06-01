@@ -163,7 +163,13 @@ export function PhotoPlanet({
         <Billboard>
           <mesh>
             <planeGeometry args={[planetSize, planetSize]} />
-            <meshBasicMaterial map={texture} transparent toneMapped={false} />
+            <meshBasicMaterial
+              map={texture}
+              transparent
+              toneMapped={false}
+              depthWrite={false}
+              alphaTest={0.05}
+            />
           </mesh>
         </Billboard>
       </group>
