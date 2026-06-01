@@ -7,9 +7,8 @@ import {
   planetColor,
   planetPosition,
   planetRadius,
+  seededRandom,
 } from './placement'
-import { createPlanetTexture, planetKind } from './planetTextures'
-import { StarSurface } from './StarSurface'
 import { sampleAudio } from './audio'
 
 export type PhotoDatum = {
@@ -19,6 +18,17 @@ export type PhotoDatum = {
   imageUrl: string
   seed: number
 }
+
+// Branded comic-style planet sprites (flat, bold-outlined — matches the poster).
+const PLANET_SPRITES = [
+  '/planets/planet-pink.png',
+  '/planets/planet-green.png',
+  '/planets/planet-blue.png',
+  '/planets/planet-cyan.png',
+  '/planets/planet-teal.png',
+  '/planets/planet-yellow.png',
+  '/planets/planet-ring.png',
+]
 
 // Photo billboard that orbits a planet: a glowing frame behind the photo plane,
 // always facing the camera, with a name/company label underneath.
@@ -102,19 +112,21 @@ export function PhotoPlanet({
   const radius = useMemo(() => planetRadius(photo.seed), [photo.seed])
   const orbit = useMemo(() => orbitParams(photo.seed), [photo.seed])
   const [h, s, l] = useMemo(() => planetColor(photo.seed), [photo.seed])
-  const hue = useMemo(
-    () => new THREE.Color().setHSL(h, s, l),
-    [h, s, l],
+  const hue = useMemo(() => new THREE.Color().setHSL(h, s, l), [h, s, l])
+
+  // Pick a branded planet sprite for this world (stable per seed).
+  const spriteSrc = useMemo(
+    () =>
+      PLANET_SPRITES[
+        Math.floor(seededRandom(photo.seed * 23 + 5) * PLANET_SPRITES.length)
+      ],
+    [photo.seed],
   )
-  const emissive = useMemo(
-    () => new THREE.Color().setHSL(h, s, Math.min(0.65, l + 0.1)),
-    [h, s, l],
-  )
-  const kind = useMemo(() => planetKind(photo.seed), [photo.seed])
-  const texture = useMemo(
-    () => (kind === 'star' ? null : createPlanetTexture(photo.seed)),
-    [kind, photo.seed],
-  )
+  const texture = useTexture(spriteSrc)
+  texture.colorSpace = THREE.SRGBColorSpace
+
+  // Flat sprite is a bit bigger than the old sphere diameter (it has padding).
+  const planetSize = radius * 2.4
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
@@ -123,19 +135,17 @@ export function PhotoPlanet({
     const age = (performance.now() - bornAt) / 1000
     const grow = Math.min(1, age / 1.4)
     const eased = 1 - Math.pow(1 - grow, 3)
-    if (groupRef.current) {
-      groupRef.current.scale.setScalar(eased)
-    }
+    if (groupRef.current) groupRef.current.scale.setScalar(eased)
 
     if (planetRef.current) {
-      planetRef.current.rotation.y = t * 0.2
-      // Throb the planet on the beat so it dances with the music.
+      // Gentle float + beat throb (no spin — these are flat illustrations).
+      planetRef.current.position.y = Math.sin(t * 0.6 + photo.seed) * 0.25
       const audio = sampleAudio(t)
-      const pulse = beatPulse ? 1 + audio.beat * 0.06 * pulseStrength : 1
+      const pulse = beatPulse ? 1 + audio.beat * 0.07 * pulseStrength : 1
       planetRef.current.scale.setScalar(pulse)
     }
     if (orbitRef.current) {
-      // Keep the billboard clear of the planet surface regardless of size.
+      // Keep the billboard clear of the planet regardless of size.
       const d = orbit.distance + radius
       const a = orbit.phase + t * orbit.speed
       orbitRef.current.position.set(
@@ -148,35 +158,15 @@ export function PhotoPlanet({
 
   return (
     <group ref={groupRef} position={position} scale={0}>
-      {/* Planet — animated star, or a textured rocky/gas world */}
+      {/* Planet — branded comic sprite, always facing the camera. */}
       <group ref={planetRef}>
-        {kind === 'star' ? (
-          <StarSurface radius={radius} hue={hue} />
-        ) : (
+        <Billboard>
           <mesh>
-            <sphereGeometry args={[radius, 48, 48]} />
-            <meshStandardMaterial
-              map={texture}
-              color="#ffffff"
-              emissive={emissive}
-              emissiveIntensity={0.12}
-              roughness={0.7}
-              metalness={0.15}
-            />
+            <planeGeometry args={[planetSize, planetSize]} />
+            <meshBasicMaterial map={texture} transparent toneMapped={false} />
           </mesh>
-        )}
+        </Billboard>
       </group>
-      {/* Soft glow halo around the planet */}
-      <mesh scale={1.18}>
-        <sphereGeometry args={[radius, 24, 24]} />
-        <meshBasicMaterial
-          color={hue}
-          transparent
-          opacity={0.1}
-          side={THREE.BackSide}
-          toneMapped={false}
-        />
-      </mesh>
       {/* Orbiting photo billboard */}
       <group ref={orbitRef}>
         <PhotoBillboard photo={photo} hue={hue} />

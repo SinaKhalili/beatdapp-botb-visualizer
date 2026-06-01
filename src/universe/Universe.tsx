@@ -15,6 +15,7 @@ import { WaveTerrain } from './viz/WaveTerrain'
 import { Shockwaves } from './viz/Shockwaves'
 import { WaveformRibbons } from './viz/WaveformRibbons'
 import { Starscape } from './Starscape'
+import { BrandSpiral } from './BrandSpiral'
 import type { VizConfig } from './controls'
 import type { PhotoDatum } from './PhotoPlanet'
 
@@ -27,14 +28,17 @@ function Scene({
 }) {
   return (
     <>
-      <color attach="background" args={['#05010f']} />
-      <fog attach="fog" args={['#0a0320', 60, 240]} />
+      <color attach="background" args={['#190a3a']} />
+      <fog attach="fog" args={['#190a3a', 70, 260]} />
 
       <ambientLight intensity={0.32} />
       <pointLight position={[0, 0, 0]} intensity={1.4} color="#a78bfa" />
       <directionalLight position={[20, 30, 10]} intensity={0.6} color="#ffd9f4" />
 
       <Starscape />
+      <Suspense fallback={null}>
+        <BrandSpiral />
+      </Suspense>
       <Nebula pulse={viz.beatPulse} strength={viz.pulseStrength} />
 
       {viz.terrain && <WaveTerrain height={viz.terrainHeight} />}
@@ -110,7 +114,11 @@ function LoadingScreen({ photosReady }: { photosReady: boolean }) {
 
   return (
     <div className={`loading-overlay${done ? ' loading-overlay--done' : ''}`}>
-      <div className="loading-title">BOTB Universe</div>
+      <img
+        className="brand-title brand-title--md"
+        src="/brand/botb-title.png"
+        alt="BOTB Universe"
+      />
       <div className="loading-bar">
         <div
           className="loading-bar-fill"
@@ -171,7 +179,11 @@ export function Universe() {
       <LoadingScreen photosReady={photos.length > 0} />
 
       <div className="universe-overlay">
-        <div className="universe-title">BOTB Universe</div>
+        <img
+          className="brand-title brand-title--sm"
+          src="/brand/botb-title.png"
+          alt="BOTB Universe"
+        />
       </div>
 
       {!presentation && (

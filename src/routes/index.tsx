@@ -9,7 +9,11 @@ function Home() {
     <div className="landing-root">
       <div className="landing-grain" />
       <main className="landing-content">
-        <h1 className="landing-title">BOTB Universe</h1>
+        <img
+          className="brand-title brand-title--lg"
+          src="/brand/botb-title.png"
+          alt="BOTB Universe"
+        />
 
         <div className="landing-actions">
           <Link to="/universe" className="landing-btn landing-btn--primary">
