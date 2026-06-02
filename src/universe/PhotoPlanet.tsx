@@ -96,38 +96,82 @@ function PhotoBillboard({
   )
 }
 
-export function PhotoPlanet({
+// How many people share one planet.
+export const PER_PLANET = 2
+
+// One person's photo orbiting the shared planet, at its own phase offset.
+function OrbitingPhoto({
   photo,
+  orbit,
+  radius,
+  phaseOffset,
+}: {
+  photo: PhotoDatum
+  orbit: ReturnType<typeof orbitParams>
+  radius: number
+  phaseOffset: number
+}) {
+  const orbitRef = useRef<THREE.Group>(null)
+  const [bornAt] = useState(() => performance.now())
+  const [h, s, l] = useMemo(() => planetColor(photo.seed), [photo.seed])
+  const hue = useMemo(() => new THREE.Color().setHSL(h, s, l), [h, s, l])
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime
+    if (!orbitRef.current) return
+    const d = orbit.distance + radius
+    const a = orbit.phase + phaseOffset + t * orbit.speed
+    orbitRef.current.position.set(
+      Math.cos(a) * d,
+      Math.sin(a) * d * orbit.tilt,
+      Math.sin(a) * d,
+    )
+    // Scale-in when this person joins the planet.
+    const age = (performance.now() - bornAt) / 1000
+    const grow = Math.min(1, age / 1.4)
+    orbitRef.current.scale.setScalar(1 - Math.pow(1 - grow, 3))
+  })
+
+  return (
+    <group ref={orbitRef}>
+      <PhotoBillboard photo={photo} hue={hue} />
+    </group>
+  )
+}
+
+// A planet shared by up to PER_PLANET people; their photos orbit it on evenly
+// spaced phases. The planet's look/position is anchored to the first member so
+// it stays put as a second person joins.
+export function PlanetGroup({
+  photos,
   index,
   beatPulse = false,
   pulseStrength = 1,
 }: {
-  photo: PhotoDatum
+  photos: Array<PhotoDatum>
   index: number
   beatPulse?: boolean
   pulseStrength?: number
 }) {
   const groupRef = useRef<THREE.Group>(null)
   const planetRef = useRef<THREE.Group>(null)
-  const orbitRef = useRef<THREE.Group>(null)
   const [bornAt] = useState(() => performance.now())
 
+  const anchor = photos[0]
   const position = useMemo(
-    () => planetPosition(index, photo.seed),
-    [index, photo.seed],
+    () => planetPosition(index, anchor.seed),
+    [index, anchor.seed],
   )
-  const radius = useMemo(() => planetRadius(photo.seed), [photo.seed])
-  const orbit = useMemo(() => orbitParams(photo.seed), [photo.seed])
-  const [h, s, l] = useMemo(() => planetColor(photo.seed), [photo.seed])
-  const hue = useMemo(() => new THREE.Color().setHSL(h, s, l), [h, s, l])
+  const radius = useMemo(() => planetRadius(anchor.seed), [anchor.seed])
+  const orbit = useMemo(() => orbitParams(anchor.seed), [anchor.seed])
 
-  // Pick a branded planet sprite for this world (stable per seed).
+  // Pick a branded planet sprite for this planet (stable per anchor seed).
   const spriteSrc = useMemo(
     () =>
       PLANET_SPRITES[
-        Math.floor(seededRandom(photo.seed * 23 + 5) * PLANET_SPRITES.length)
+        Math.floor(seededRandom(anchor.seed * 23 + 5) * PLANET_SPRITES.length)
       ],
-    [photo.seed],
+    [anchor.seed],
   )
   const texture = useTexture(spriteSrc)
   texture.colorSpace = THREE.SRGBColorSpace
@@ -138,28 +182,19 @@ export function PhotoPlanet({
   useFrame((state) => {
     const t = state.clock.elapsedTime
 
-    // Scale-in when the planet first appears (new photo arrives).
+    // Scale-in when the planet first appears.
     const age = (performance.now() - bornAt) / 1000
     const grow = Math.min(1, age / 1.4)
-    const eased = 1 - Math.pow(1 - grow, 3)
-    if (groupRef.current) groupRef.current.scale.setScalar(eased)
+    if (groupRef.current) {
+      groupRef.current.scale.setScalar(1 - Math.pow(1 - grow, 3))
+    }
 
     if (planetRef.current) {
       // Gentle float + beat throb (no spin — these are flat illustrations).
-      planetRef.current.position.y = Math.sin(t * 0.6 + photo.seed) * 0.25
+      planetRef.current.position.y = Math.sin(t * 0.6 + anchor.seed) * 0.25
       const audio = sampleAudio(t)
       const pulse = beatPulse ? 1 + audio.beat * 0.07 * pulseStrength : 1
       planetRef.current.scale.setScalar(pulse)
-    }
-    if (orbitRef.current) {
-      // Keep the billboard clear of the planet regardless of size.
-      const d = orbit.distance + radius
-      const a = orbit.phase + t * orbit.speed
-      orbitRef.current.position.set(
-        Math.cos(a) * d,
-        Math.sin(a) * d * orbit.tilt,
-        Math.sin(a) * d,
-      )
     }
   })
 
@@ -180,10 +215,16 @@ export function PhotoPlanet({
           </mesh>
         </Billboard>
       </group>
-      {/* Orbiting photo billboard */}
-      <group ref={orbitRef}>
-        <PhotoBillboard photo={photo} hue={hue} />
-      </group>
+      {/* Each member's photo orbits on its own phase. */}
+      {photos.map((p, j) => (
+        <OrbitingPhoto
+          key={p.id}
+          photo={p}
+          orbit={orbit}
+          radius={radius}
+          phaseOffset={((Math.PI * 2) / PER_PLANET) * j}
+        />
+      ))}
     </group>
   )
 }

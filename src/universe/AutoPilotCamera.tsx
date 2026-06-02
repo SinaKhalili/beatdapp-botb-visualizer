@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { planetPosition } from './placement'
-import type { PhotoDatum } from './PhotoPlanet'
 
 const PLANET_DWELL = 11 // seconds lingering on a single planet
 const WIDE_DWELL = 13 // seconds on a wide establishing shot
@@ -11,7 +10,11 @@ const WIDE_EVERY = 4 // every Nth move is a pull-back-and-see-everyone shot
 // Unattended auto-pilot. Glides slowly between planets (no snapping), swings to
 // the newest planet when one arrives, and periodically pulls way back for a wide
 // establishing shot that takes in almost the whole galaxy.
-export function AutoPilotCamera({ photos }: { photos: Array<PhotoDatum> }) {
+export function AutoPilotCamera({
+  anchors,
+}: {
+  anchors: Array<{ seed: number }>
+}) {
   const { camera } = useThree()
 
   const moveCount = useRef(0)
@@ -24,7 +27,7 @@ export function AutoPilotCamera({ photos }: { photos: Array<PhotoDatum> }) {
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
-    const count = photos.length
+    const count = anchors.length
     if (count === 0) return
 
     // A new planet just arrived → glide to it (interrupts a wide shot).
@@ -65,8 +68,8 @@ export function AutoPilotCamera({ photos }: { photos: Array<PhotoDatum> }) {
       )
       lookAt.current.lerp(new THREE.Vector3(0, 0, 0), lookEase)
     } else {
-      const photo = photos[targetIndex.current]
-      const [px, py, pz] = planetPosition(targetIndex.current, photo.seed)
+      const anchor = anchors[targetIndex.current]
+      const [px, py, pz] = planetPosition(targetIndex.current, anchor.seed)
       lookAt.current.lerp(new THREE.Vector3(px, py, pz), lookEase)
 
       // Camera sits at a slowly orbiting offset from the focused planet.

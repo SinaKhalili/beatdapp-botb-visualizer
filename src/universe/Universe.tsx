@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useProgress } from '@react-three/drei'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
@@ -8,7 +8,7 @@ import * as THREE from 'three'
 import { api } from '../../convex/_generated/api'
 import { Nebula } from './Nebula'
 import { AutoPilotCamera } from './AutoPilotCamera'
-import { PhotoPlanet } from './PhotoPlanet'
+import { PER_PLANET, PlanetGroup } from './PhotoPlanet'
 import { setAudioConfig } from './audio'
 import { useVizControls } from './controls'
 import { WaveTerrain } from './viz/WaveTerrain'
@@ -26,6 +26,17 @@ function Scene({
   photos: Array<PhotoDatum>
   viz: VizConfig
 }) {
+  // Group people into planets (PER_PLANET each). Ordering is stable, so a
+  // planet keeps its members as new people fill the last group then start a new
+  // one.
+  const groups = useMemo(() => {
+    const out: Array<Array<PhotoDatum>> = []
+    for (let i = 0; i < photos.length; i += PER_PLANET) {
+      out.push(photos.slice(i, i + PER_PLANET))
+    }
+    return out
+  }, [photos])
+
   return (
     <>
       <color attach="background" args={['#190a3a']} />
@@ -45,12 +56,12 @@ function Scene({
       {viz.ribbons && <WaveformRibbons count={viz.ribbonCount} />}
       {viz.shockwaves && <Shockwaves strength={viz.pulseStrength} />}
 
-      {photos.map((photo, i) => (
+      {groups.map((group, i) => (
         // Per-planet Suspense so one texture (re)loading — e.g. the live alien
         // swap — never blanks the rest of the galaxy.
-        <Suspense key={photo.id} fallback={null}>
-          <PhotoPlanet
-            photo={photo}
+        <Suspense key={group[0].id} fallback={null}>
+          <PlanetGroup
+            photos={group}
             index={i}
             beatPulse={viz.beatPulse}
             pulseStrength={viz.pulseStrength}
@@ -58,7 +69,7 @@ function Scene({
         </Suspense>
       ))}
 
-      <AutoPilotCamera photos={photos} />
+      <AutoPilotCamera anchors={groups.map((g) => ({ seed: g[0].seed }))} />
 
       <EffectComposer>
         <Bloom
