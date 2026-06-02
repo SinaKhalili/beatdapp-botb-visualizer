@@ -20,15 +20,10 @@ export type PhotoDatum = {
 }
 
 // Branded comic-style planet sprites (flat, bold-outlined — matches the poster).
-const PLANET_SPRITES = [
-  '/planets/planet-pink.png',
-  '/planets/planet-green.png',
-  '/planets/planet-blue.png',
-  '/planets/planet-cyan.png',
-  '/planets/planet-teal.png',
-  '/planets/planet-yellow.png',
-  '/planets/planet-ring.png',
-]
+const PLANET_SPRITES = Array.from(
+  { length: 15 },
+  (_, i) => `/planets/planet-${String(i + 1).padStart(2, '0')}.png`,
+)
 
 // Photo billboard that orbits a planet: a glowing frame behind the photo plane,
 // always facing the camera, with a name/company label underneath.
