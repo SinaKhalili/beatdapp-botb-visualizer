@@ -1,7 +1,8 @@
 node_modules
 
 # Raw branded design assets (huge); only processed runtime assets in public/ ship
-/brand/all_assets/
+/brand/*
+!/brand/README.md
 
 # --- secrets & local env (NEVER commit — repo is public) ---
 .dev.vars
