@@ -7,13 +7,19 @@ const PLANET_DWELL = 11 // seconds lingering on a single planet
 const WIDE_DWELL = 13 // seconds on a wide establishing shot
 const WIDE_EVERY = 4 // every Nth move is a pull-back-and-see-everyone shot
 
+// Distances cycled through on planet shots so the framing varies — intimate
+// close-up → medium → pulled back. Scaled by the `zoom` control.
+const ZOOM_LEVELS = [7, 11, 15, 20]
+
 // Unattended auto-pilot. Glides slowly between planets (no snapping), swings to
-// the newest planet when one arrives, and periodically pulls way back for a wide
-// establishing shot that takes in almost the whole galaxy.
+// the newest planet when one arrives, varies the zoom each visit, and
+// periodically pulls way back for a wide establishing shot.
 export function AutoPilotCamera({
   anchors,
+  zoom = 1,
 }: {
   anchors: Array<{ seed: number }>
+  zoom?: number
 }) {
   const { camera } = useThree()
 
@@ -22,6 +28,7 @@ export function AutoPilotCamera({
   const isWide = useRef(false)
   const lastSwitch = useRef(0)
   const knownCount = useRef(0)
+  const distLevel = useRef(ZOOM_LEVELS[1])
   const lookAt = useRef(new THREE.Vector3(0, 0, 0))
   const desiredPos = useRef(new THREE.Vector3(0, 6, 24))
 
@@ -34,6 +41,7 @@ export function AutoPilotCamera({
     if (count > knownCount.current) {
       targetIndex.current = count - 1
       isWide.current = false
+      distLevel.current = ZOOM_LEVELS[moveCount.current % ZOOM_LEVELS.length]
       lastSwitch.current = t
       knownCount.current = count
     }
@@ -48,6 +56,8 @@ export function AutoPilotCamera({
       } else {
         isWide.current = false
         targetIndex.current = (targetIndex.current + 1) % count
+        // Vary the zoom level each planet visit.
+        distLevel.current = ZOOM_LEVELS[moveCount.current % ZOOM_LEVELS.length]
       }
       lastSwitch.current = t
     }
@@ -72,12 +82,13 @@ export function AutoPilotCamera({
       const [px, py, pz] = planetPosition(targetIndex.current, anchor.seed)
       lookAt.current.lerp(new THREE.Vector3(px, py, pz), lookEase)
 
-      // Camera sits at a slowly orbiting offset from the focused planet.
+      // Camera sits at a slowly orbiting offset; distance varies per visit, and
+      // closer shots sit lower for a more intimate framing.
       const orbit = t * 0.1
-      const dist = 11
+      const dist = distLevel.current * zoom
       desiredPos.current.set(
         px + Math.cos(orbit) * dist,
-        py + 4 + Math.sin(t * 0.08) * 2,
+        py + dist * 0.35 + Math.sin(t * 0.08) * 2,
         pz + Math.sin(orbit) * dist,
       )
     }

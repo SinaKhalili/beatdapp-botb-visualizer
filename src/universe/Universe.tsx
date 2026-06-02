@@ -69,7 +69,10 @@ function Scene({
         </Suspense>
       ))}
 
-      <AutoPilotCamera anchors={groups.map((g) => ({ seed: g[0].seed }))} />
+      <AutoPilotCamera
+        anchors={groups.map((g) => ({ seed: g[0].seed }))}
+        zoom={viz.zoom}
+      />
 
       <EffectComposer>
         <Bloom

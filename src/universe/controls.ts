@@ -14,6 +14,7 @@ export type VizConfig = {
   ribbons: boolean
   ribbonCount: number
   bloom: number
+  zoom: number
 }
 
 export function useVizControls(): VizConfig {
@@ -34,6 +35,9 @@ export function useVizControls(): VizConfig {
     }),
     Scene: folder({
       bloom: { value: 0.85, min: 0, max: 2.5, step: 0.05, label: 'bloom' },
+    }),
+    Camera: folder({
+      zoom: { value: 1, min: 0.5, max: 2, step: 0.05, label: 'zoom' },
     }),
   })
 }
