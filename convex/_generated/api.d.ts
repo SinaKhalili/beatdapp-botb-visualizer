@@ -13,6 +13,7 @@ import type * as aliens from "../aliens.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as photos from "../photos.js";
+import type * as snappic from "../snappic.js";
 import type * as webhooks from "../webhooks.js";
 
 import type {
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   myFunctions: typeof myFunctions;
   photos: typeof photos;
+  snappic: typeof snappic;
   webhooks: typeof webhooks;
 }>;
 

@@ -66,31 +66,35 @@ function PhotoBillboard({
         <planeGeometry args={[photoW, photoH]} />
         <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
-      {/* Label */}
+      {/* Label — name (if any) then company/world. */}
       <group position={[0, labelY, 0]}>
-        <Text
-          fontSize={0.34}
-          color="#ffffff"
-          anchorX="center"
-          anchorY="top"
-          outlineWidth={0.012}
-          outlineColor="#000000"
-          maxWidth={5}
-        >
-          {photo.name}
-        </Text>
-        <Text
-          position={[0, -0.42, 0]}
-          fontSize={0.24}
-          color={hue}
-          anchorX="center"
-          anchorY="top"
-          outlineWidth={0.008}
-          outlineColor="#000000"
-          maxWidth={5}
-        >
-          {photo.company.toUpperCase()}
-        </Text>
+        {photo.name.trim() && (
+          <Text
+            fontSize={0.34}
+            color="#ffffff"
+            anchorX="center"
+            anchorY="top"
+            outlineWidth={0.012}
+            outlineColor="#000000"
+            maxWidth={5}
+          >
+            {photo.name}
+          </Text>
+        )}
+        {photo.company.trim() && (
+          <Text
+            position={[0, photo.name.trim() ? -0.42 : 0, 0]}
+            fontSize={photo.name.trim() ? 0.24 : 0.3}
+            color={photo.name.trim() ? hue : '#ffffff'}
+            anchorX="center"
+            anchorY="top"
+            outlineWidth={0.01}
+            outlineColor="#000000"
+            maxWidth={5}
+          >
+            {photo.company.toUpperCase()}
+          </Text>
+        )}
       </group>
     </Billboard>
   )

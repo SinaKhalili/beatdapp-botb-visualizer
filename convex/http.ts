@@ -32,6 +32,11 @@ const snappicWebhook = httpAction(async (ctx, req) => {
     body: body.slice(0, 900_000), // cap under Convex's 1MB string limit
   })
 
+  // Import any photo/survey data from this event (ignores test/irrelevant ones).
+  if (body) {
+    await ctx.runMutation(internal.snappic.ingest, { body })
+  }
+
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { 'content-type': 'application/json' },

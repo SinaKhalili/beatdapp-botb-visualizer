@@ -24,7 +24,20 @@ export default defineSchema({
         v.literal('failed'),
       ),
     ),
-  }),
+    // Snappic photobooth import: the AI session id (dedup) + the linked still
+    // session id (to attach the survey "world" answer, which can arrive later).
+    externalId: v.optional(v.string()),
+    originalSessionId: v.optional(v.string()),
+  })
+    .index('by_externalId', ['externalId'])
+    .index('by_originalSession', ['originalSessionId']),
+
+  // Survey answers from the booth, keyed by their session id, so a photo that
+  // arrives before/after its survey can still be matched to its "world".
+  boothSurveys: defineTable({
+    sessionId: v.string(),
+    world: v.string(),
+  }).index('by_session', ['sessionId']),
 
   // Raw inbound webhook payloads (e.g. from the Snappic photobooth). Captured
   // as-is so we can inspect the vendor's shape before mapping fields.
