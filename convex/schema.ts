@@ -25,4 +25,15 @@ export default defineSchema({
       ),
     ),
   }),
+
+  // Raw inbound webhook payloads (e.g. from the Snappic photobooth). Captured
+  // as-is so we can inspect the vendor's shape before mapping fields.
+  webhookEvents: defineTable({
+    source: v.string(),
+    method: v.string(),
+    contentType: v.optional(v.string()),
+    query: v.optional(v.string()),
+    headers: v.string(), // JSON string
+    body: v.string(), // raw request body (capped)
+  }),
 })

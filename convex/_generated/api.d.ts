@@ -10,8 +10,10 @@
 
 import type * as admin from "../admin.js";
 import type * as aliens from "../aliens.js";
+import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as photos from "../photos.js";
+import type * as webhooks from "../webhooks.js";
 
 import type {
   ApiFromModules,
@@ -22,8 +24,10 @@ import type {
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   aliens: typeof aliens;
+  http: typeof http;
   myFunctions: typeof myFunctions;
   photos: typeof photos;
+  webhooks: typeof webhooks;
 }>;
 
 /**
