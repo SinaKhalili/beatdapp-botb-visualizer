@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import type { Id } from '../../convex/_generated/dataModel'
@@ -108,8 +108,6 @@ function AdminConsole({
         </div>
       </header>
 
-      <AddForm />
-
       <div className="admin-list">
         {photos?.map((p) => (
           <AdminRow key={p.id} photo={p} password={password} />
@@ -119,94 +117,6 @@ function AdminConsole({
         )}
       </div>
     </div>
-  )
-}
-
-function AddForm() {
-  const generateUploadUrl = useMutation(api.photos.generateUploadUrl)
-  const addUploadedPhoto = useMutation(api.photos.addUploadedPhoto)
-  const [name, setName] = useState('')
-  const [company, setCompany] = useState('')
-  const [file, setFile] = useState<File | null>(null)
-  const [alienify, setAlienify] = useState(true)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
-
-  async function add(e: React.FormEvent) {
-    e.preventDefault()
-    if (!file) return
-    setBusy(true)
-    setError(null)
-    try {
-      const url = await generateUploadUrl()
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      })
-      if (!res.ok) throw new Error(`upload failed (${res.status})`)
-      const { storageId } = (await res.json()) as {
-        storageId: Id<'_storage'>
-      }
-      await addUploadedPhoto({
-        name: name.trim() || 'Anonymous',
-        company: company.trim() || 'Unknown World',
-        storageId,
-        transform: alienify,
-      })
-      setName('')
-      setCompany('')
-      setFile(null)
-      if (fileRef.current) fileRef.current.value = ''
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <form className="admin-add" onSubmit={add}>
-      <h2 className="admin-h2">Add a world</h2>
-      <div className="admin-add-row">
-        <input
-          className="admin-input"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          className="admin-input"
-          placeholder="Company / community"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-        />
-        <input
-          ref={fileRef}
-          className="admin-file"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        />
-        <label className="admin-check">
-          <input
-            type="checkbox"
-            checked={alienify}
-            onChange={(e) => setAlienify(e.target.checked)}
-          />
-          Alienify
-        </label>
-        <button
-          className="admin-btn admin-btn--primary"
-          type="submit"
-          disabled={!file || busy}
-        >
-          {busy ? 'Adding…' : 'Add'}
-        </button>
-      </div>
-      {error && <p className="admin-error">{error}</p>}
-    </form>
   )
 }
 
@@ -229,7 +139,6 @@ function AdminRow({
 }) {
   const update = useMutation(api.admin.update)
   const remove = useMutation(api.admin.remove)
-  const retransform = useMutation(api.admin.retransform)
   const [name, setName] = useState(photo.name)
   const [company, setCompany] = useState(photo.company)
   const [busy, setBusy] = useState(false)
@@ -274,15 +183,6 @@ function AdminRow({
         {dirty && (
           <button className="admin-btn admin-btn--primary" onClick={save} disabled={busy}>
             Save
-          </button>
-        )}
-        {photo.isUpload && (
-          <button
-            className="admin-btn"
-            onClick={() => retransform({ photoId: photo.id, password })}
-            title="Re-run the alien transform"
-          >
-            Re-alienify
           </button>
         )}
         <button className="admin-btn admin-btn--danger" onClick={onRemove}>

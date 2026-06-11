@@ -1,6 +1,5 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
-import { internal } from './_generated/api'
 
 // Convex env vars are available in all functions; declare process for the
 // Convex tsconfig (no Node types).
@@ -66,21 +65,6 @@ export const update = mutation({
     await ctx.db.patch('photos', args.photoId, {
       name: args.name,
       company: args.company,
-    })
-  },
-})
-
-// Re-run the alien transform on an uploaded photo.
-export const retransform = mutation({
-  args: { photoId: v.id('photos'), password: v.string() },
-  handler: async (ctx, args) => {
-    assertAdmin(args.password)
-    const p = await ctx.db.get('photos', args.photoId)
-    if (!p || !p.storageId) throw new Error('No uploaded image to transform.')
-    await ctx.db.patch('photos', args.photoId, { status: 'transforming' })
-    await ctx.scheduler.runAfter(0, internal.aliens.transform, {
-      photoId: args.photoId,
-      storageId: p.storageId,
     })
   },
 })

@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { useProgress } from '@react-three/drei'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
 import { Leva } from 'leva'
-import { useMutation, useQuery } from 'convex/react'
+import { useQuery } from 'convex/react'
 import * as THREE from 'three'
 import { api } from '../../convex/_generated/api'
 import { Nebula } from './Nebula'
@@ -150,15 +150,9 @@ function LoadingScreen({ photosReady }: { photosReady: boolean }) {
 
 export function Universe() {
   const photos = useQuery(api.photos.listPhotos) ?? []
-  const seedPhotos = useMutation(api.photos.seedPhotos)
   const viz = useVizControls()
   const [panelHidden, setPanelHidden] = useState(false)
   const [presentation, setPresentation] = useState(false)
-
-  // Make the screen look alive immediately if the table is empty.
-  useEffect(() => {
-    void seedPhotos({})
-  }, [seedPhotos])
 
   // Keep the audio engine in sync with the control panel.
   useEffect(() => {

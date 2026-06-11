@@ -36,3 +36,6 @@ node_modules
 /playwright/.cache/
 
 app.config.timestamp_*.js
+
+# Post-event local backup of all attendee images + DB export (120MB, not for git)
+backup/

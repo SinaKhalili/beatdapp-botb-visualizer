@@ -11,7 +11,8 @@ export default defineSchema({
   photos: defineTable({
     name: v.string(),
     company: v.string(),
-    // Seeded placeholders use a direct URL; uploads use Convex file storage.
+    // All photos now live in Convex file storage (migrated June 2026 when the
+    // Snappic CDN shut down); imageUrl remains only for schema compatibility.
     imageUrl: v.optional(v.string()),
     storageId: v.optional(v.id('_storage')),
     // Stable random number used for deterministic placement/coloring in 3D.
@@ -39,8 +40,8 @@ export default defineSchema({
     world: v.string(),
   }).index('by_session', ['sessionId']),
 
-  // Raw inbound webhook payloads (e.g. from the Snappic photobooth). Captured
-  // as-is so we can inspect the vendor's shape before mapping fields.
+  // Raw inbound webhook payloads from the Snappic photobooth, kept as an
+  // archive of the event. The webhook endpoint itself has been removed.
   webhookEvents: defineTable({
     source: v.string(),
     method: v.string(),
