@@ -3,8 +3,15 @@
   "name": "beatdapp-planet",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  "main": "./src/worker.ts",
   "observability": {
     "enabled": true
-  }
+  },
+  // Archived event photos (migrated off the Snappic CDN), served at /photos/*.
+  "r2_buckets": [
+    {
+      "binding": "BOTB_PHOTOS",
+      "bucket_name": "botb-photos"
+    }
+  ]
 }

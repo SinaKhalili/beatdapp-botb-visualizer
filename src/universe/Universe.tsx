@@ -16,15 +16,18 @@ import { Shockwaves } from './viz/Shockwaves'
 import { WaveformRibbons } from './viz/WaveformRibbons'
 import { Starscape } from './Starscape'
 import { BrandSpiral } from './BrandSpiral'
+import { GalleryPanel } from './GalleryPanel'
 import type { VizConfig } from './controls'
 import type { PhotoDatum } from './PhotoPlanet'
 
 function Scene({
   photos,
   viz,
+  focusGroup,
 }: {
   photos: Array<PhotoDatum>
   viz: VizConfig
+  focusGroup: number | null
 }) {
   // Group people into planets (PER_PLANET each). Ordering is stable, so a
   // planet keeps its members as new people fill the last group then start a new
@@ -72,6 +75,7 @@ function Scene({
       <AutoPilotCamera
         anchors={groups.map((g) => ({ seed: g[0].seed }))}
         zoom={viz.zoom}
+        focusIndex={focusGroup}
       />
 
       <EffectComposer>
@@ -151,8 +155,20 @@ function LoadingScreen({ photosReady }: { photosReady: boolean }) {
 export function Universe() {
   const photos = useQuery(api.photos.listPhotos) ?? []
   const viz = useVizControls()
-  const [panelHidden, setPanelHidden] = useState(false)
+  // Effects panel starts hidden; "Show controls" or "h" reveals it.
+  const [panelHidden, setPanelHidden] = useState(true)
   const [presentation, setPresentation] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
+  // Index into `photos` of the gallery selection (the camera focuses its planet).
+  const [focusPhoto, setFocusPhoto] = useState<number | null>(null)
+
+  const focusGroup =
+    focusPhoto === null ? null : Math.floor(focusPhoto / PER_PLANET)
+
+  function closeGallery() {
+    setGalleryOpen(false)
+    setFocusPhoto(null) // resume the auto-pilot tour
+  }
 
   // Keep the audio engine in sync with the control panel.
   useEffect(() => {
@@ -163,11 +179,22 @@ export function Universe() {
     })
   }, [viz.enabled, viz.bpm, viz.intensity])
 
-  // Keyboard shortcuts: "h" toggles the control panel, Esc exits presentation.
+  // Keyboard shortcuts: "h" toggles the control panel, "g" the gallery, and
+  // Esc exits presentation / closes the gallery.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'h' || e.key === 'H') setPanelHidden((v) => !v)
-      if (e.key === 'Escape') setPresentation(false)
+      if (e.key === 'g' || e.key === 'G') {
+        setGalleryOpen((v) => {
+          if (v) setFocusPhoto(null)
+          return !v
+        })
+      }
+      if (e.key === 'Escape') {
+        setPresentation(false)
+        setGalleryOpen(false)
+        setFocusPhoto(null)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -181,7 +208,7 @@ export function Universe() {
         dpr={[1, 2]}
         camera={{ fov: 60, near: 0.1, far: 1000, position: [0, 6, 24] }}
       >
-        <Scene photos={photos} viz={viz} />
+        <Scene photos={photos} viz={viz} focusGroup={focusGroup} />
       </Canvas>
 
       <LoadingScreen photosReady={photos.length > 0} />
@@ -195,7 +222,27 @@ export function Universe() {
       </div>
 
       {!presentation && (
+        <GalleryPanel
+          photos={photos}
+          open={galleryOpen}
+          selectedId={focusPhoto === null ? null : (photos[focusPhoto]?.id ?? null)}
+          onSelect={setFocusPhoto}
+          onClose={closeGallery}
+        />
+      )}
+
+      {!presentation && (
         <div className="universe-buttons">
+          <button
+            type="button"
+            className="universe-btn"
+            onClick={() => {
+              if (galleryOpen) closeGallery()
+              else setGalleryOpen(true)
+            }}
+          >
+            {galleryOpen ? 'Close gallery' : 'Gallery'}
+          </button>
           <button
             type="button"
             className="universe-btn"

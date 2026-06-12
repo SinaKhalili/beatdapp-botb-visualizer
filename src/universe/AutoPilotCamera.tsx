@@ -11,15 +11,21 @@ const WIDE_EVERY = 4 // every Nth move is a pull-back-and-see-everyone shot
 // close-up → medium → pulled back. Scaled by the `zoom` control.
 const ZOOM_LEVELS = [7, 11, 15, 20]
 
+// How close the camera sits when the gallery pins a specific planet.
+const FOCUS_DIST = 9
+
 // Unattended auto-pilot. Glides slowly between planets (no snapping), swings to
 // the newest planet when one arrives, varies the zoom each visit, and
-// periodically pulls way back for a wide establishing shot.
+// periodically pulls way back for a wide establishing shot. While `focusIndex`
+// is set (gallery selection) the tour pauses and the camera holds that planet.
 export function AutoPilotCamera({
   anchors,
   zoom = 1,
+  focusIndex = null,
 }: {
   anchors: Array<{ seed: number }>
   zoom?: number
+  focusIndex?: number | null
 }) {
   const { camera } = useThree()
 
@@ -37,8 +43,19 @@ export function AutoPilotCamera({
     const count = anchors.length
     if (count === 0) return
 
+    const focused = focusIndex !== null && focusIndex >= 0 && focusIndex < count
+
+    // Gallery focus pins the camera on one planet and pauses the tour clock,
+    // so deselecting resumes with a fresh dwell instead of jumping away.
+    if (focused) {
+      targetIndex.current = focusIndex
+      isWide.current = false
+      lastSwitch.current = t
+      knownCount.current = count
+    }
+
     // A new planet just arrived → glide to it (interrupts a wide shot).
-    if (count > knownCount.current) {
+    if (!focused && count > knownCount.current) {
       targetIndex.current = count - 1
       isWide.current = false
       distLevel.current = ZOOM_LEVELS[moveCount.current % ZOOM_LEVELS.length]
@@ -48,7 +65,7 @@ export function AutoPilotCamera({
 
     // Advance the tour on a timer.
     const dwell = isWide.current ? WIDE_DWELL : PLANET_DWELL
-    if (t - lastSwitch.current > dwell) {
+    if (!focused && t - lastSwitch.current > dwell) {
       moveCount.current += 1
       // Wide shots only make sense once there's a crowd to take in.
       if (count >= 6 && moveCount.current % WIDE_EVERY === 0) {
@@ -84,8 +101,8 @@ export function AutoPilotCamera({
 
       // Camera sits at a slowly orbiting offset; distance varies per visit, and
       // closer shots sit lower for a more intimate framing.
-      const orbit = t * 0.1
-      const dist = distLevel.current * zoom
+      const orbit = t * (focused ? 0.06 : 0.1)
+      const dist = (focused ? FOCUS_DIST : distLevel.current) * zoom
       desiredPos.current.set(
         px + Math.cos(orbit) * dist,
         py + dist * 0.35 + Math.sin(t * 0.08) * 2,
