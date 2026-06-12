@@ -20,6 +20,12 @@ import { GalleryPanel, Lightbox } from './GalleryPanel'
 import type { VizConfig } from './controls'
 import type { PhotoDatum } from './PhotoPlanet'
 
+// Phones/tablets get a capped pixel ratio — a retina iPhone at dpr 3 with
+// post-processing is a fast way to run out of GPU memory.
+const isTouchDevice =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(pointer: coarse)').matches
+
 function Scene({
   photos,
   viz,
@@ -212,7 +218,7 @@ export function Universe() {
       <Leva hidden={panelHidden || presentation} collapsed={false} />
       <Canvas
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
-        dpr={[1, 2]}
+        dpr={isTouchDevice ? [1, 1.5] : [1, 2]}
         camera={{ fov: 60, near: 0.1, far: 1000, position: [0, 6, 24] }}
       >
         <Scene photos={photos} viz={viz} focusGroup={focusGroup} />

@@ -67,7 +67,10 @@
   right: clamp(1rem, 2.5vw, 2rem);
   bottom: clamp(1rem, 2.5vw, 2rem);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.6rem;
+  max-width: calc(100vw - 2rem);
   z-index: 3;
 }
 
@@ -320,7 +323,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
 }
 
 .lightbox-label {

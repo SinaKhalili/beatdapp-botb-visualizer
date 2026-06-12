@@ -10,6 +10,7 @@ import {
   seededRandom,
 } from './placement'
 import { sampleAudio } from './audio'
+import { thumbUrl } from './photoUrls'
 
 export type PhotoDatum = {
   id: string
@@ -34,7 +35,7 @@ function PhotoBillboard({
   photo: PhotoDatum
   hue: THREE.Color
 }) {
-  const texture = useTexture(photo.imageUrl)
+  const texture = useTexture(thumbUrl(photo.imageUrl))
   texture.colorSpace = THREE.SRGBColorSpace
 
   // Size the billboard to the photo's real aspect ratio so it isn't stretched.

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import type { PhotoDatum } from './PhotoPlanet'
+import { thumbUrl } from './photoUrls'
 
 // Inline SVGs instead of unicode glyphs (⛶/⤓) — those are missing from many
 // system fonts and render as blank/tofu.
@@ -185,7 +186,7 @@ export function GalleryPanel({
               >
                 <img
                   className="gallery-thumb"
-                  src={p.imageUrl}
+                  src={thumbUrl(p.imageUrl)}
                   alt={p.name || p.company}
                   loading="lazy"
                 />
