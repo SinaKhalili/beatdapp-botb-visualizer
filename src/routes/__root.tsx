@@ -8,6 +8,11 @@ import * as React from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import appCss from '~/styles/app.css?url'
 
+const SITE_URL = 'https://beatdapp-planet.surreali.workers.dev'
+const SITE_DESCRIPTION =
+  'A psychedelic galaxy of worlds from the Battle of the Bands — every ' +
+  'photobooth photo lives on as a planet in the BOTB Universe.'
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
 }>()({
@@ -23,6 +28,20 @@ export const Route = createRootRouteWithContext<{
       {
         title: 'BOTB Universe',
       },
+      { name: 'description', content: SITE_DESCRIPTION },
+      { name: 'theme-color', content: '#190a3a' },
+      // Open Graph (link unfurls) — image URLs must be absolute.
+      { property: 'og:title', content: 'BOTB Universe' },
+      { property: 'og:description', content: SITE_DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: SITE_URL },
+      { property: 'og:image', content: `${SITE_URL}/og.jpg` },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'BOTB Universe' },
+      { name: 'twitter:description', content: SITE_DESCRIPTION },
+      { name: 'twitter:image', content: `${SITE_URL}/og.jpg` },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
@@ -43,7 +62,7 @@ export const Route = createRootRouteWithContext<{
         sizes: '16x16',
         href: '/favicon-16x16.png',
       },
-      { rel: 'manifest', href: '/site.webmanifest', color: '#fffff' },
+      { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'icon', href: '/favicon.ico' },
     ],
   }),

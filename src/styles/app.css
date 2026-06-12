@@ -250,6 +250,72 @@
   cursor: default;
 }
 
+.gallery-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.3rem;
+}
+
+/* ── Lightbox (enlarged photo view) ───────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(5, 1, 15, 0.85);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  animation: lightbox-fade-in 0.2s ease;
+}
+
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightbox-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-width: min(1100px, 94vw);
+  max-height: 92vh;
+  cursor: default;
+}
+
+.lightbox-img {
+  display: block;
+  min-height: 0;
+  max-width: 100%;
+  max-height: calc(92vh - 4rem);
+  object-fit: contain;
+  border: 1px solid rgba(177, 75, 255, 0.55);
+  border-radius: 0.75rem;
+  box-shadow: 0 0 60px rgba(123, 60, 255, 0.45);
+}
+
+.lightbox-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lightbox-label {
+  font-size: 0.85rem;
+}
+
+.lightbox-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
 @keyframes universe-flicker {
   0%,
   92%,

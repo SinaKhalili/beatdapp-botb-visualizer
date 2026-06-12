@@ -16,7 +16,7 @@ import { Shockwaves } from './viz/Shockwaves'
 import { WaveformRibbons } from './viz/WaveformRibbons'
 import { Starscape } from './Starscape'
 import { BrandSpiral } from './BrandSpiral'
-import { GalleryPanel } from './GalleryPanel'
+import { GalleryPanel, Lightbox } from './GalleryPanel'
 import type { VizConfig } from './controls'
 import type { PhotoDatum } from './PhotoPlanet'
 
@@ -161,6 +161,8 @@ export function Universe() {
   const [galleryOpen, setGalleryOpen] = useState(false)
   // Index into `photos` of the gallery selection (the camera focuses its planet).
   const [focusPhoto, setFocusPhoto] = useState<number | null>(null)
+  // Photo shown in the fullscreen lightbox, if any.
+  const [enlarged, setEnlarged] = useState<PhotoDatum | null>(null)
 
   const focusGroup =
     focusPhoto === null ? null : Math.floor(focusPhoto / PER_PLANET)
@@ -180,7 +182,7 @@ export function Universe() {
   }, [viz.enabled, viz.bpm, viz.intensity])
 
   // Keyboard shortcuts: "h" toggles the control panel, "g" the gallery, and
-  // Esc exits presentation / closes the gallery.
+  // Esc peels back one layer at a time: lightbox → gallery/presentation.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'h' || e.key === 'H') setPanelHidden((v) => !v)
@@ -191,9 +193,14 @@ export function Universe() {
         })
       }
       if (e.key === 'Escape') {
-        setPresentation(false)
-        setGalleryOpen(false)
-        setFocusPhoto(null)
+        setEnlarged((cur) => {
+          if (cur === null) {
+            setPresentation(false)
+            setGalleryOpen(false)
+            setFocusPhoto(null)
+          }
+          return null
+        })
       }
     }
     window.addEventListener('keydown', onKey)
@@ -227,8 +234,13 @@ export function Universe() {
           open={galleryOpen}
           selectedId={focusPhoto === null ? null : (photos[focusPhoto]?.id ?? null)}
           onSelect={setFocusPhoto}
+          onEnlarge={setEnlarged}
           onClose={closeGallery}
         />
+      )}
+
+      {enlarged && (
+        <Lightbox photo={enlarged} onClose={() => setEnlarged(null)} />
       )}
 
       {!presentation && (

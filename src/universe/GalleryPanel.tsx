@@ -11,42 +11,102 @@ function downloadFilename(p: PhotoDatum): string {
   return `botb-${label}-${p.id.slice(-6)}.webp`
 }
 
+// Fetch → blob so the save works even though the image URL is absolute.
+async function downloadPhoto(p: PhotoDatum): Promise<void> {
+  const res = await fetch(p.imageUrl)
+  if (!res.ok) throw new Error(`download failed (${res.status})`)
+  const blobUrl = URL.createObjectURL(await res.blob())
+  const a = document.createElement('a')
+  a.href = blobUrl
+  a.download = downloadFilename(p)
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(blobUrl)
+}
+
+// Small stateful wrapper so each download button can show a busy state.
+function DownloadButton({
+  photo,
+  className,
+  label,
+}: {
+  photo: PhotoDatum
+  className: string
+  label?: string
+}) {
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      type="button"
+      className={className}
+      disabled={busy}
+      title="Download this photo"
+      onClick={() => {
+        setBusy(true)
+        void downloadPhoto(photo).finally(() => setBusy(false))
+      }}
+    >
+      {busy ? '…' : (label ?? '⤓')}
+    </button>
+  )
+}
+
+// Fullscreen enlarged view of one photo. Click the backdrop (or ✕ / Esc — the
+// Universe owns the Esc handling) to close.
+export function Lightbox({
+  photo,
+  onClose,
+}: {
+  photo: PhotoDatum
+  onClose: () => void
+}) {
+  return (
+    <div className="lightbox" onClick={onClose}>
+      <figure className="lightbox-frame" onClick={(e) => e.stopPropagation()}>
+        <img
+          className="lightbox-img"
+          src={photo.imageUrl}
+          alt={photo.name || photo.company}
+        />
+        <figcaption className="lightbox-caption">
+          <span className="gallery-label lightbox-label">
+            {photo.name || photo.company}
+          </span>
+          <div className="lightbox-actions">
+            <DownloadButton
+              photo={photo}
+              className="universe-btn"
+              label="Download"
+            />
+            <button type="button" className="universe-btn" onClick={onClose}>
+              Close
+            </button>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  )
+}
+
 // Scrollable side gallery of every world. Clicking a photo snaps the camera to
-// its planet (click again to release); the ⤓ button downloads the original.
+// its planet (click again to release); ⛶ opens the enlarged view and ⤓
+// downloads the original.
 export function GalleryPanel({
   photos,
   open,
   selectedId,
   onSelect,
+  onEnlarge,
   onClose,
 }: {
   photos: Array<PhotoDatum>
   open: boolean
   selectedId: string | null
   onSelect: (index: number | null) => void
+  onEnlarge: (photo: PhotoDatum) => void
   onClose: () => void
 }) {
-  const [busyId, setBusyId] = useState<string | null>(null)
-
-  async function download(p: PhotoDatum) {
-    setBusyId(p.id)
-    try {
-      // Fetch → blob so the save works even though the image URL is absolute.
-      const res = await fetch(p.imageUrl)
-      if (!res.ok) throw new Error(`download failed (${res.status})`)
-      const blobUrl = URL.createObjectURL(await res.blob())
-      const a = document.createElement('a')
-      a.href = blobUrl
-      a.download = downloadFilename(p)
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(blobUrl)
-    } finally {
-      setBusyId(null)
-    }
-  }
-
   if (!open) return null
 
   return (
@@ -88,15 +148,17 @@ export function GalleryPanel({
               </button>
               <figcaption className="gallery-caption">
                 <span className="gallery-label">{p.name || p.company}</span>
-                <button
-                  type="button"
-                  className="gallery-download"
-                  onClick={() => void download(p)}
-                  disabled={busyId === p.id}
-                  title="Download this photo"
-                >
-                  {busyId === p.id ? '…' : '⤓'}
-                </button>
+                <div className="gallery-actions">
+                  <button
+                    type="button"
+                    className="gallery-download"
+                    onClick={() => onEnlarge(p)}
+                    title="View enlarged"
+                  >
+                    ⛶
+                  </button>
+                  <DownloadButton photo={p} className="gallery-download" />
+                </div>
               </figcaption>
             </figure>
           )
