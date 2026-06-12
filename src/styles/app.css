@@ -15,9 +15,9 @@
 /* ── BOTB Universe screen ─────────────────────────────────────────── */
 .universe-root {
   position: fixed;
+  /* inset: 0 alone (no 100vw/100vh) — on iOS, 100vh includes the area behind
+     Safari's collapsing URL bar, which clipped the top/bottom UI. */
   inset: 0;
-  width: 100vw;
-  height: 100vh;
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 40%, #160a36 0%, #05010f 70%);
 }
@@ -29,8 +29,8 @@
 
 .universe-overlay {
   position: absolute;
-  left: clamp(1.5rem, 4vw, 4rem);
-  bottom: clamp(1.5rem, 4vw, 3rem);
+  left: calc(clamp(1.5rem, 4vw, 4rem) + env(safe-area-inset-left, 0px));
+  bottom: calc(clamp(1.5rem, 4vw, 3rem) + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
   user-select: none;
   z-index: 2;
@@ -64,8 +64,8 @@
 /* Bottom-right control buttons. */
 .universe-buttons {
   position: absolute;
-  right: clamp(1rem, 2.5vw, 2rem);
-  bottom: clamp(1rem, 2.5vw, 2rem);
+  right: calc(clamp(1rem, 2.5vw, 2rem) + env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(1rem, 2.5vw, 2rem) + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -115,6 +115,9 @@
   box-shadow: -12px 0 40px rgba(20, 4, 50, 0.6);
   z-index: 4;
   animation: gallery-slide-in 0.25s ease;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 @keyframes gallery-slide-in {

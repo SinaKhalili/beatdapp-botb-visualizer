@@ -23,7 +23,9 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        // viewport-fit=cover lets the dark scene extend behind the notch/home
+        // bar; safe-area insets in the CSS keep the UI clear of them.
+        content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
       {
         title: 'BOTB Universe',
