@@ -25,7 +25,7 @@ export function useVizControls(): VizConfig {
       intensity: { value: 1, min: 0, max: 2, step: 0.05 },
     }),
     Effects: folder({
-      terrain: { value: true, label: 'wave terrain' },
+      terrain: { value: false, label: 'wave terrain' },
       terrainHeight: { value: 9, min: 0, max: 24, step: 0.5, label: 'terrain height' },
       beatPulse: { value: true, label: 'beat pulses' },
       pulseStrength: { value: 1, min: 0, max: 2, step: 0.05, label: 'pulse strength' },
