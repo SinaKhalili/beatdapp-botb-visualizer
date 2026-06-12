@@ -36,6 +36,20 @@
   z-index: 2;
 }
 
+/* Touch devices: brand title sits centered at the top instead of bottom-left. */
+@media (pointer: coarse) {
+  .universe-overlay {
+    bottom: auto;
+    top: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .universe-overlay .brand-title--sm {
+    width: min(300px, 64vw);
+  }
+}
+
 .universe-title {
   font-family: 'Monoton', cursive;
   font-size: clamp(2.25rem, 6vw, 5rem);

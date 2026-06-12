@@ -268,16 +268,18 @@ export function Universe() {
           >
             {panelHidden ? 'Show controls' : 'Hide controls'}
           </button>
-          <button
-            type="button"
-            className="universe-btn"
-            onClick={() => {
-              setPresentation(true)
-              setPanelHidden(true)
-            }}
-          >
-            Hide cursor &amp; UI (Esc to exit)
-          </button>
+          {!isTouchDevice && (
+            <button
+              type="button"
+              className="universe-btn"
+              onClick={() => {
+                setPresentation(true)
+                setPanelHidden(true)
+              }}
+            >
+              Hide cursor &amp; UI (Esc to exit)
+            </button>
+          )}
         </div>
       )}
 
