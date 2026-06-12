@@ -227,6 +227,11 @@
 
 .gallery-download {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  min-height: 24px;
   font-size: 0.9rem;
   line-height: 1;
   color: #8be9ff;

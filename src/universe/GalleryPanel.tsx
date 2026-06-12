@@ -1,5 +1,49 @@
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import type { PhotoDatum } from './PhotoPlanet'
+
+// Inline SVGs instead of unicode glyphs (⛶/⤓) — those are missing from many
+// system fonts and render as blank/tofu.
+function ExpandIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M3 8V3h5" />
+      <path d="M16 3h5v5" />
+      <path d="M21 16v5h-5" />
+      <path d="M8 21H3v-5" />
+    </svg>
+  )
+}
+
+function DownloadIcon() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M12 4v11" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M4 20h16" />
+    </svg>
+  )
+}
 
 function downloadFilename(p: PhotoDatum): string {
   const label =
@@ -33,7 +77,7 @@ function DownloadButton({
 }: {
   photo: PhotoDatum
   className: string
-  label?: string
+  label?: ReactNode
 }) {
   const [busy, setBusy] = useState(false)
   return (
@@ -47,7 +91,7 @@ function DownloadButton({
         void downloadPhoto(photo).finally(() => setBusy(false))
       }}
     >
-      {busy ? '…' : (label ?? '⤓')}
+      {busy ? '…' : (label ?? <DownloadIcon />)}
     </button>
   )
 }
@@ -155,7 +199,7 @@ export function GalleryPanel({
                     onClick={() => onEnlarge(p)}
                     title="View enlarged"
                   >
-                    ⛶
+                    <ExpandIcon />
                   </button>
                   <DownloadButton photo={p} className="gallery-download" />
                 </div>
